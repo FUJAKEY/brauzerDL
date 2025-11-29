@@ -20,7 +20,7 @@ jobs:
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
-        modules: 'qtwebengine'
+        modules: 'qtwebengine qtwebchannel qtpositioning'
 
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
@@ -39,13 +39,15 @@ jobs:
     - name: Deploy Qt Dependencies
       shell: bash
       run: |
-        cd build
+        mkdir dist
+        cp build/SweetBrowser.exe dist/
+        cd dist
         windeployqt --release --compiler-runtime --no-translations --no-opengl-sw SweetBrowser.exe
-        # windeployqt sometimes misses webengine resources, ensure they are copied if needed
-        # But usually for 6.5+ it handles it well.
+        # Remove unneeded files if any
+        rm -f *.obj *.ilk *.pdb
 
     - name: Archive Production Artifact
       uses: actions/upload-artifact@v4
       with:
         name: SweetBrowser-Windows-x64
-        path: build/
+        path: dist/
