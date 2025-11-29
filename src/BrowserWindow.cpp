@@ -173,6 +173,10 @@ void BrowserWindow::updateUrlBar(const QUrl &url) {
     m_urlBar->setText(url.toString());
 }
 
+void BrowserWindow::updateTitle(const QString &title) {
+    setWindowTitle(title);
+}
+
 void BrowserWindow::handleLoadProgress(int progress) {
     m_progressBar->setValue(progress);
     if (progress < 100) {
