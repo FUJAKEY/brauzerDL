@@ -1,0 +1,61 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Create Build Directory
+      run: mkdir build
+
+    - name: Configure CMake
+      run: cmake -S . -B build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build All
+      run: cmake --build build --config Release
+
+    - name: Prepare Browser Distribution
+      run: |
+        mkdir dist
+        mkdir dist\CandyBrowser
+        copy build\src\browser\CandyBrowser.exe dist\CandyBrowser\
+        windeployqt --release --compiler-runtime --no-translations --qmldir . dist\CandyBrowser\CandyBrowser.exe
+
+        # Copy style.qss if it wasn't embedded or needs to be external (we embedded it, but just in case)
+        # copy src\resources\styles\style.qss dist\CandyBrowser\
+
+    - name: Zip Browser Payload
+      run: |
+        powershell Compress-Archive -Path dist\CandyBrowser\* -DestinationPath dist\payload.zip
+
+    - name: Prepare Installer
+      run: |
+        mkdir dist\Setup
+        copy build\src\installer\CandyInstaller.exe dist\Setup\CandySetup.exe
+        windeployqt --release --compiler-runtime --no-translations dist\Setup\CandySetup.exe
+        copy dist\payload.zip dist\Setup\payload.zip
+
+    - name: Package Release
+      uses: actions/upload-artifact@v4
+      with:
+        name: CandyBrowserSetup
+        path: dist/Setup
