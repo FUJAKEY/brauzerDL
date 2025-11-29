@@ -7,6 +7,10 @@
 #include <QUrl>
 #include <QWebEngineProfile>
 #include <QWebEngineHistory>
+#include <QWebEngineSettings>
+#include "SettingsManager.h"
+#include "SettingsDialog.h"
+#include "UiAnimator.h"
 
 BrowserWindow::BrowserWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,13 +18,31 @@ BrowserWindow::BrowserWindow(QWidget *parent)
     m_historyManager = new HistoryManager(this);
     m_downloadManager = new DownloadManager(this);
 
-    // Global download handler
-    QWebEngineProfile::defaultProfile()->setHttpCacheType(QWebEngineProfile::DiskHttpCache);
-    connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested,
+    // Configure Persistent Storage for Cookies & Cache
+    auto profile = QWebEngineProfile::defaultProfile();
+    profile->setPersistentStoragePath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/Storage");
+    profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
+    profile->setHttpCacheType(QWebEngineProfile::DiskHttpCache);
+
+    // YouTube/Media Settings
+    profile->settings()->setAttribute(QWebEngineSettings::PlaybackRequiresUserGesture, false);
+    profile->settings()->setAttribute(QWebEngineSettings::DnsPrefetchEnabled, true);
+
+    connect(profile, &QWebEngineProfile::downloadRequested,
             m_downloadManager, &DownloadManager::handleDownloadRequested);
 
     setupUi();
-    // Start with one tab
+
+    // Animation: Fade In Window
+    UiAnimator::fadeIn(this, 800);
+
+    // Initial Translation
+    retranslateUi();
+
+    // Connect settings change to retranslate
+    connect(&SettingsManager::instance(), &SettingsManager::settingsChanged, this, &BrowserWindow::retranslateUi);
+
+    // Start with one tab (default homepage logic inside)
     handleNewTabRequested();
 }
 
@@ -58,8 +80,20 @@ void BrowserWindow::setupUi() {
     m_toolBar->addWidget(m_progressBar);
 
     // New Tab Button
-    QAction *newTabAction = m_toolBar->addAction(QIcon(":/icons/new_tab.svg"), "+");
-    connect(newTabAction, &QAction::triggered, this, [this]() { handleNewTabRequested(); });
+    m_newTabAction = m_toolBar->addAction(QIcon(":/icons/new_tab.svg"), "+");
+    connect(m_newTabAction, &QAction::triggered, this, [this]() { handleNewTabRequested(); });
+
+    // Spacer
+    QWidget *spacer = new QWidget();
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    m_toolBar->addWidget(spacer);
+
+    // Settings Button
+    m_settingsAction = m_toolBar->addAction(QIcon(":/icons/settings.svg"), "Settings");
+    connect(m_settingsAction, &QAction::triggered, this, [this]() {
+        SettingsDialog dlg(m_historyManager, this);
+        dlg.exec();
+    });
 
     // Tab Widget
     m_tabWidget = new QTabWidget(this);
@@ -122,6 +156,17 @@ void BrowserWindow::handleNewTabRequested(WebView *view) {
     // If it's a fresh tab, focus the URL bar.
     if (view->url().isEmpty()) {
         m_urlBar->setFocus();
+        // Load default page if requested (Google)
+        // If it's the first tab and blank, load Google/Search
+        if (m_tabWidget->count() == 1) {
+            QString homeUrl = "https://www.google.com";
+             switch(SettingsManager::instance().searchEngine()) {
+                case SettingsManager::Yandex: homeUrl = "https://ya.ru"; break;
+                case SettingsManager::DuckDuckGo: homeUrl = "https://duckduckgo.com"; break;
+                default: break;
+            }
+            view->setUrl(QUrl(homeUrl));
+        }
     }
 }
 
@@ -150,6 +195,39 @@ void BrowserWindow::handleTabChanged(int index) {
     }
 }
 
+void BrowserWindow::retranslateUi() {
+    auto lang = SettingsManager::instance().language();
+
+    if (lang == SettingsManager::Russian) {
+        m_backAction->setText(QString::fromUtf8("Назад"));
+        m_forwardAction->setText(QString::fromUtf8("Вперед"));
+        m_reloadAction->setText(QString::fromUtf8("Обновить"));
+        m_stopAction->setText(QString::fromUtf8("Стоп"));
+        m_settingsAction->setText(QString::fromUtf8("Настройки"));
+        m_urlBar->setPlaceholderText(QString::fromUtf8("Поиск или адрес..."));
+        setWindowTitle(QString::fromUtf8("SweetBrowser - Жидкое Стекло"));
+    } else if (lang == SettingsManager::Ukrainian) {
+        m_backAction->setText(QString::fromUtf8("Назад"));
+        m_forwardAction->setText(QString::fromUtf8("Вперед"));
+        m_reloadAction->setText(QString::fromUtf8("Оновити"));
+        m_stopAction->setText(QString::fromUtf8("Стоп"));
+        m_settingsAction->setText(QString::fromUtf8("Налаштування"));
+        m_urlBar->setPlaceholderText(QString::fromUtf8("Пошук або адреса..."));
+        setWindowTitle(QString::fromUtf8("SweetBrowser - Рідке Скло"));
+    } else {
+        m_backAction->setText("Back");
+        m_forwardAction->setText("Forward");
+        m_reloadAction->setText("Reload");
+        m_stopAction->setText("Stop");
+        m_settingsAction->setText("Settings");
+        m_urlBar->setPlaceholderText("Search or enter address");
+        setWindowTitle("SweetBrowser - Liquid Glass");
+    }
+
+    // Update tooltip also
+    m_newTabAction->setText(lang == SettingsManager::Russian ? "+" : "+");
+}
+
 WebView* BrowserWindow::currentWebView() {
     return qobject_cast<WebView*>(m_tabWidget->currentWidget());
 }
@@ -162,7 +240,14 @@ void BrowserWindow::loadUrl() {
 
         // Basic search fallback
         if (!url.isValid() || (input.indexOf('.') == -1 && input.indexOf(':') == -1 && input.indexOf("localhost") == -1)) {
-            url = QUrl("https://www.google.com/search?q=" + input);
+            // Determine search engine
+            QString searchUrl;
+            switch(SettingsManager::instance().searchEngine()) {
+                case SettingsManager::Yandex: searchUrl = "https://yandex.ru/search/?text="; break;
+                case SettingsManager::DuckDuckGo: searchUrl = "https://duckduckgo.com/?q="; break;
+                case SettingsManager::Google: default: searchUrl = "https://www.google.com/search?q="; break;
+            }
+            url = QUrl(searchUrl + input);
         }
 
         view->setUrl(url);

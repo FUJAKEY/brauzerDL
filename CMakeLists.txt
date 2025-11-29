@@ -21,6 +21,11 @@ add_executable(SweetBrowser
     src/HistoryManager.h
     src/DownloadManager.cpp
     src/DownloadManager.h
+    src/SettingsManager.cpp
+    src/SettingsManager.h
+    src/SettingsDialog.cpp
+    src/SettingsDialog.h
+    src/UiAnimator.h
 )
 
 target_link_libraries(SweetBrowser PRIVATE

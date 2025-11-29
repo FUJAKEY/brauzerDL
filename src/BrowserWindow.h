@@ -40,7 +40,10 @@ private:
     QAction *m_forwardAction;
     QAction *m_reloadAction;
     QAction *m_stopAction;
+    QAction *m_settingsAction;
+    QAction *m_newTabAction;
 
     void setupUi();
+    void retranslateUi();
     WebView* currentWebView();
 };

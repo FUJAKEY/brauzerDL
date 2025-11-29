@@ -15,6 +15,11 @@ public:
     explicit HistoryManager(QObject *parent = nullptr);
     void addHistoryItem(const QString &title, const QString &url);
     QList<HistoryItem> getHistory() const;
+    void clearHistory();
+    void removeHistoryItem(int index);
+
+signals:
+    void historyChanged();
 
 private:
     void loadHistory();

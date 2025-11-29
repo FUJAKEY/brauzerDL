@@ -4,7 +4,8 @@
 #include <QTextStream>
 
 void loadStyleSheet(QApplication &app) {
-    QFile file(":/style.qss");
+    // Load Liquid Glass Theme
+    QFile file(":/liquid.qss");
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         QTextStream stream(&file);
         app.setStyleSheet(stream.readAll());

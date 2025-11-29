@@ -27,6 +27,21 @@ void HistoryManager::addHistoryItem(const QString &title, const QString &url) {
     if (m_history.size() > 1000) m_history.removeLast();
 
     saveHistory();
+    emit historyChanged();
+}
+
+void HistoryManager::clearHistory() {
+    m_history.clear();
+    saveHistory();
+    emit historyChanged();
+}
+
+void HistoryManager::removeHistoryItem(int index) {
+    if (index >= 0 && index < m_history.size()) {
+        m_history.removeAt(index);
+        saveHistory();
+        emit historyChanged();
+    }
 }
 
 QList<HistoryItem> HistoryManager::getHistory() const {
