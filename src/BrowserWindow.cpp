@@ -6,6 +6,7 @@
 #include <QIcon>
 #include <QUrl>
 #include <QWebEngineProfile>
+#include <QWebEngineHistory>
 
 BrowserWindow::BrowserWindow(QWidget *parent)
     : QMainWindow(parent)
