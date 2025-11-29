@@ -8,6 +8,7 @@
 #include <QWebEngineProfile>
 #include <QWebEngineHistory>
 #include <QWebEngineSettings>
+#include <QStandardPaths>
 #include "SettingsManager.h"
 #include "SettingsDialog.h"
 #include "UiAnimator.h"
