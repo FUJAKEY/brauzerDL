@@ -1,0 +1,107 @@
+/* Global Window - Deep Dark Blue Gradient */
+QMainWindow {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0f2027, stop:0.5 #203a43, stop:1 #2c5364);
+    color: #ffffff;
+}
+
+/* Glassy Toolbar */
+QToolBar {
+    background-color: rgba(255, 255, 255, 20); /* Semi-transparent */
+    border-bottom: 1px solid rgba(255, 255, 255, 40);
+    padding: 8px;
+    spacing: 10px;
+}
+
+/* Glassy Buttons */
+QToolButton {
+    background-color: rgba(255, 255, 255, 10);
+    border: 1px solid rgba(255, 255, 255, 30);
+    border-radius: 8px;
+    padding: 6px;
+    color: #ffffff;
+}
+
+QToolButton:hover {
+    background-color: rgba(255, 255, 255, 40); /* Glow effect */
+    border: 1px solid rgba(255, 255, 255, 80);
+}
+
+QToolButton:pressed {
+    background-color: rgba(255, 255, 255, 10);
+}
+
+/* Liquid Input Field */
+QLineEdit {
+    background-color: rgba(0, 0, 0, 50);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 30);
+    border-radius: 15px; /* Fully rounded */
+    padding: 6px 15px;
+    font-size: 14px;
+}
+
+QLineEdit:focus {
+    border: 1px solid #00d2ff; /* Neon Cyan glow */
+    background-color: rgba(0, 0, 0, 80);
+}
+
+/* Glassy Tabs */
+QTabWidget::pane {
+    border: none;
+    background: transparent;
+}
+
+QTabBar::tab {
+    background-color: rgba(255, 255, 255, 10);
+    color: #cccccc;
+    padding: 8px 25px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    margin-right: 4px;
+    min-width: 140px;
+    border: 1px solid rgba(255, 255, 255, 10);
+}
+
+QTabBar::tab:selected {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(0, 210, 255, 40), stop:1 rgba(58, 123, 213, 10));
+    color: #ffffff;
+    border-bottom: 2px solid #00d2ff;
+    font-weight: bold;
+}
+
+QTabBar::tab:hover:!selected {
+    background-color: rgba(255, 255, 255, 25);
+}
+
+QTabBar::close-button {
+    image: url(:/icons/close.svg);
+    subcontrol-position: right;
+}
+
+QTabBar::close-button:hover {
+    background-color: rgba(255, 85, 85, 150);
+    border-radius: 8px;
+}
+
+/* Dialog Styling */
+QDialog {
+    background: #1e1e2e;
+    color: #fff;
+}
+QComboBox, QListWidget {
+    background-color: rgba(0, 0, 0, 50);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 30);
+    border-radius: 5px;
+    padding: 5px;
+}
+QPushButton {
+    background-color: #3a7bd5;
+    color: white;
+    border-radius: 5px;
+    padding: 8px 15px;
+    border: none;
+}
+QPushButton:hover {
+    background-color: #00d2ff;
+}

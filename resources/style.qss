@@ -1,0 +1,97 @@
+/* Global Window Styling */
+QMainWindow {
+    background-color: #2b2b2b;
+    color: #ffffff;
+}
+
+/* ToolBar Styling */
+QToolBar {
+    background-color: #333333;
+    border: none;
+    padding: 5px;
+    spacing: 5px;
+}
+
+QToolButton {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 4px;
+    color: #e0e0e0;
+}
+
+QToolButton:hover {
+    background-color: #444444;
+}
+
+QToolButton:pressed {
+    background-color: #222222;
+}
+
+/* Address Bar Styling */
+QLineEdit {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border: 1px solid #3c3c3c;
+    border-radius: 12px;
+    padding: 4px 10px;
+    selection-background-color: #3daee9;
+}
+
+QLineEdit:focus {
+    border: 1px solid #3daee9;
+}
+
+/* Tab Widget Styling */
+QTabWidget::pane {
+    border: none;
+    background-color: #2b2b2b;
+}
+
+QTabBar::tab {
+    background-color: #333333;
+    color: #aaaaaa;
+    padding: 8px 20px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin-right: 2px;
+    min-width: 120px;
+    border: none;
+}
+
+QTabBar::tab:selected {
+    background-color: #2b2b2b; /* Matches window background */
+    color: #ffffff;
+    font-weight: bold;
+}
+
+QTabBar::tab:hover:!selected {
+    background-color: #444444;
+}
+
+QTabBar::close-button {
+    image: url(:/icons/close.svg);
+    subcontrol-position: right;
+}
+
+QTabBar::close-button:hover {
+    background-color: #ff5555;
+    border-radius: 8px;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    border: none;
+    background: #2b2b2b;
+    width: 10px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical {
+    background: #555555;
+    min-height: 20px;
+    border-radius: 5px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+}
