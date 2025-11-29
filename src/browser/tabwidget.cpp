@@ -31,9 +31,9 @@ void TabWidget::createTab(const QUrl &url)
 
 void TabWidget::closeTab(int index)
 {
-    QWidget *widget = widget(index);
+    QWidget *tab = widget(index);
     removeTab(index);
-    delete widget;
+    delete tab;
 }
 
 void TabWidget::loadUrl(const QUrl &url)
