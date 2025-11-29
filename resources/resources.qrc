@@ -1,0 +1,12 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/">
+        <file>style.qss</file>
+        <file>icons/back.svg</file>
+        <file>icons/forward.svg</file>
+        <file>icons/reload.svg</file>
+        <file>icons/stop.svg</file>
+        <file>icons/new_tab.svg</file>
+        <file>icons/close.svg</file>
+    </qresource>
+</RCC>
